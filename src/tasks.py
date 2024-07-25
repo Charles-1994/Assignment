@@ -35,7 +35,7 @@ def task2(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
         fiile_name(str): The file that needs to be created in the requested folder
     """
     result_df = empDept.filter(col('area')=='Marketing').join(empInfo, on='id',how='left')
-    result_df.select('name','address').display()
+    # result_df.select('name','address').display()
 
     # Create new columns based on the number of parts
     result_df = result_df.select('name','address')\
