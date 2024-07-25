@@ -5,7 +5,7 @@ from .data_read_and_write import write_csv
 
 output_folder = "./output_folder/"
 
-def task1(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame) -> None:
+def task1(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: str, folder_name: str = 'it_data', file_name: str = 'it_data.csv') -> None:
     """
     Task 1: Process IT Data.
     
@@ -17,6 +17,6 @@ def task1(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame) -> None:
     it_df = empDept.filter(col('area')=='IT')\
         .join(empInfo, on='id', how='left')\
         .sort(desc('sales_amount')).limit(100)
-    folder_name = 'it_data'
-    file_name = 'it_data.csv'
+    
     write_csv(it_df, output_folder, folder_name, file_name)
+    logger.info("Task 1: IT Data processed and saved successfully")

@@ -24,10 +24,10 @@ def main(
     empInfo = load_dataset(spark, dataset_two_path)
     clientsCalled = load_dataset(spark, dataset_three_path)
 
-    # output_folder = "../output_folder/"
+    output_folder = "./output_folder/"
 
     # Task 1
-    task1(spark, empDept, empInfo)
+    task1(spark, empDept, empInfo, output_folder)
 
     # folder_name = 'it_data'
     # file_name = 'it_data.csv'

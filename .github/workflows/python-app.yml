@@ -9,8 +9,8 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
 jobs:
   build:
@@ -30,6 +30,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+
 #        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     # - name: Lint with flake8
     #   run: |
@@ -41,15 +42,18 @@ jobs:
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=src" >> $GITHUB_ENV
 
-    - name: Test with pytest
+    - name: Run Tests
       env:
         PYTHONPATH: src
       run: |
-        python -m pytest --import-mode=importlib
+        pytest tests/ --junitxml=reports/test-results.xml
 
     - name: Build and package
+      env:
+        PYTHONPATH: src
       run: |
-          python setup.py sdist bdist_wheel
+        python setup.py sdist bdist_wheel
+
     - name: Upload package
       uses: actions/upload-artifact@v2
       with:
