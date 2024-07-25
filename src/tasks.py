@@ -83,3 +83,38 @@ def task3(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
 
     write_csv(department_data.select('area','sales_amount','calls_successful_perc'), output_folder, folder_name, file_name)
     logger.info("Task 3: sales_amount and calls_successful_perc by Department are processed and saved successfully")
+
+def task4(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: str, folder_name: str = 'top_3', file_name: str = 'top_3.csv') -> None:
+    """
+    Task 4: Process top 3 performers in each area (sorted by calls_successful_perc, sales_amount in descending order).
+    
+    Args:
+        spark (SparkSession): The SparkSession object.
+        empDept (DataFrame): The first dataset.
+        empInfo (DataFrame): The second dataset.
+        output_folder(str): The output folder.
+        folder_name(str): The folder that needs to be created in the output folder
+        fiile_name(str): The file that needs to be created in the requested folder
+    """
+
+    empSales = empDept.join(empInfo, on = 'id', how='left')
+    empSales.createOrReplaceTempView('empSales')
+
+    sql_query = """
+    with temp as (
+    select area, name, format_number(sales_amount,0) as sales_amount, round(calls_successful/calls_made * 100,1) as calls_successful_perc
+    from empSales
+    )
+
+    select area, name, sales_amount, rank_, concat(calls_successful_perc,'%') as calls_successful_perc
+    from (
+        select *, row_number() over (partition by area order by calls_successful_perc DESC, sales_amount DESC) as rank_
+        from temp
+    ) t
+    where rank_ <= 3
+    """
+    top3_df = spark.sql(sql_query)
+    # top3_df.display()    
+
+    write_csv(top3_df, output_folder, folder_name, file_name)
+    logger.info("Task 4: top 3 performers in each area (sorted by calls_successful_perc, sales_amount in descending order) are processed and saved successfully")
