@@ -24,10 +24,24 @@ def setup_logger() -> logging.Logger:
     """
     logger = logging.getLogger("SalesDataLogger")
     logger.setLevel(logging.INFO)
-    handler = RotatingFileHandler("sales_data.log", maxBytes=1000000, backupCount=3)
+    log_file = "sales_data.log"
+
+    # Create handlers
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+
+    file_handler = RotatingFileHandler(log_file, maxBytes=1*1024*1024, backupCount=5)
+    file_handler.setLevel(logging.INFO)
+
+    # Create formatter and add it to the handlers
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+
+    # Add handlers to the logger
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+
     return logger
 
 logger = setup_logger()

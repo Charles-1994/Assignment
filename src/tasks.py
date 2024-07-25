@@ -24,7 +24,7 @@ def task1(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
 
 def task2(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: str, folder_name: str = 'marketing_address_info', file_name: str = 'marketing_address_info.csv') -> None:
     """
-    Task 1: Process Address of Marketing Area.
+    Task 2: Process Addresses of Marketing Area employees.
     
     Args:
         spark (SparkSession): The SparkSession object.
@@ -53,4 +53,33 @@ def task2(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
     # marketing_address_info.display()
 
     write_csv(marketing_address_info, output_folder, folder_name, file_name)
-    logger.info("Task 2: Addresses of Marketing Department are processed and saved successfully") 
+    logger.info("Task 2: Addresses of Marketing Department are processed and saved successfully")
+
+def task3(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: str, folder_name: str = 'department_breakdown', file_name: str = 'department_breakdown.csv') -> None:
+    """
+    Task 3: Process sales_amount and calls_successful_perc by Department.
+    
+    Args:
+        spark (SparkSession): The SparkSession object.
+        empDept (DataFrame): The first dataset.
+        empInfo (DataFrame): The second dataset.
+        output_folder(str): The output folder.
+        folder_name(str): The folder that needs to be created in the output folder
+        fiile_name(str): The file that needs to be created in the requested folder
+    """
+    # Creating temp views of the dfs
+    empSales = empDept.join(empInfo, on = 'id', how='left')
+    empSales.createOrReplaceTempView('empSales')
+
+    sql_query = """
+    select area, Format_number(round(sum(sales_amount),2),0) as sales_amount, sum(calls_made) as calls_made, 
+        sum(calls_successful) as calls_successful,
+        concat(round(sum(calls_successful)/sum(calls_made)*100,2),'%') as calls_successful_perc
+    from empSales
+    group by 1
+    """
+    department_data = spark.sql(sql_query)
+    # department_data.show()
+
+    write_csv(department_data.select('area','sales_amount','calls_successful_perc'), output_folder, folder_name, file_name)
+    logger.info("Task 3: sales_amount and calls_successful_perc by Department are processed and saved successfully")

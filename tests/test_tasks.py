@@ -3,11 +3,11 @@ from pyspark.sql import SparkSession, DataFrame
 from chispa.dataframe_comparer import assert_df_equality
 from chispa.schema_comparer import assert_schema_equality
 from pyspark.sql.functions import col, desc
-from src.tasks import task1, task2
+from src.tasks import task1, task2, task3
 from src.data_read_and_write import load_dataset
 from pathlib import Path
 import shutil
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
 
 @pytest.fixture(scope="module")
 def spark() -> SparkSession:
@@ -165,6 +165,44 @@ def test_task2(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFra
         shutil.rmtree(test_output_path)
     
     task2(spark, emp_dept_df, emp_info_df, output_folder, folder_name, file_name)
+    
+    output_path = output_folder/folder_name/file_name
+    result_df = load_dataset(spark, str(output_path))
+    
+    assert_schema_equality(result_df.schema, expected_schema)
+
+def test_task2(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFrame, tmp_path: Path) -> None:
+    """
+    Test for task3 function to ensure it processes sales_amount and calls_successful_perc by Department.
+
+    Args:
+        spark (SparkSession): The Spark session object.
+        emp_dept_df (DataFrame): Sample employee department DataFrame.
+        emp_info_df (DataFrame): Sample employee information DataFrame.
+        tmp_path: Temporary path for writing output.
+    """
+
+    output_folder = tmp_path
+    folder_name = 'department_breakdown'
+    file_name = 'department_breakdown.csv'
+    # expected_data = [
+    #     ("Lindehof 5, 4133 HB, Nederhemert", "4133 HB"),
+    #     ("2588 VD, Kropswolde", "2588 VD"),
+    #     ("Thijmenweg 38", "7801 OC")
+    # ]
+    expected_schema = StructType([
+        StructField("area", StringType(), nullable=True),
+        StructField("sales_amount", StringType(), nullable=True),
+        StructField("calls_successful_perc", StringType(), nullable=True)
+  ])
+    # expected_df = spark.createDataFrame(expected_data, expected_schema)
+    
+    # Ensure the directory is clean
+    test_output_path = tmp_path / folder_name
+    if test_output_path.exists():
+        shutil.rmtree(test_output_path)
+    
+    task3(spark, emp_dept_df, emp_info_df, output_folder, folder_name, file_name)
     
     output_path = output_folder/folder_name/file_name
     result_df = load_dataset(spark, str(output_path))

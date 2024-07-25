@@ -1,7 +1,7 @@
 import sys
 from .utils import get_spark_session, logger
 from .data_read_and_write import load_dataset, write_data, write_csv
-from .tasks import task1,task2
+from .tasks import task1,task2,task3
 # from .analysis import filter_it_data, get_top_100_it_sales, get_marketing_address_info, department_breakdown
 
 def main(
@@ -30,8 +30,11 @@ def main(
     logger.info("Executing Task 1: Processing IT Data")
     task1(spark, empDept, empInfo, output_folder)
 
-    logger.info("Executing Task 2: Processing IT Data")
+    logger.info("Executing Task 2: Addresses of Marketing Area employees")
     task2(spark, empDept, empInfo, output_folder)
+
+    logger.info("Executing Task 3: Processing sales_amount and calls_successful_perc by Department")
+    task3(spark, empDept, empInfo, output_folder)
 
     # folder_name = 'it_data'
     # file_name = 'it_data.csv'
