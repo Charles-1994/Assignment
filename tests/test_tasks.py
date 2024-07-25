@@ -4,6 +4,7 @@ from chispa.dataframe_comparer import assert_df_equality
 from pyspark.sql.functions import col, desc
 from src.tasks import task1
 from src.data_read_and_write import load_dataset
+from pathlib import Path
 
 @pytest.fixture(scope="module")
 def spark() -> SparkSession:
@@ -72,7 +73,7 @@ def clientsCalled_df(spark: SparkSession) -> DataFrame:
 
     return spark.createDataFrame(data, schema)
 
-def test_task1(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFrame, tmp_path) -> None:
+def test_task1(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFrame, tmp_path: Path) -> None:
     """
     Test for task1 function to ensure it processes IT data correctly.
     
@@ -82,7 +83,8 @@ def test_task1(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFra
         emp_info_df (DataFrame): Sample employee information DataFrame.
         tmp_path: Temporary path for writing output.
     """
-    output_folder = str(tmp_path)
+    output_folder = tmp_path
+    target_folder = 'output_folder'
     folder_name = 'it_data'
     file_name = 'it_data.csv'
     expected_data = [
@@ -94,7 +96,7 @@ def test_task1(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFra
     
     task1(spark, emp_dept_df, emp_info_df)
     
-    output_path = f"{output_folder}/{folder_name}/{file_name}"
-    result_df = load_dataset(spark, output_path)
+    output_path = output_folder/target_folder/folder_name/file_name
+    result_df = load_dataset(spark, str(output_path))
     
     assert_df_equality(result_df, expected_df)
