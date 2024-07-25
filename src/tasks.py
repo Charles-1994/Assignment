@@ -1,8 +1,9 @@
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import desc, col
+from .utils import logger
 from .data_read_and_write import write_csv
 
-output_folder = "/output_folder/"
+output_folder = "./output_folder/"
 
 def task1(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame) -> None:
     """
