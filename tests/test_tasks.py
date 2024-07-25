@@ -81,15 +81,15 @@ def clientsCalled_df(spark: SparkSession) -> DataFrame:
         (1,	40,	"Verbruggen-Vermeulen CommV", "Anny Claessens", 45, "Belgium", "Banner", 50),
         (2,	17,	"Hendrickx CV",	"Lutgarde Van Loock", 41, "Belgium", "Sign", 23)
     ]
-    # schema = ["id", "caller_id", "company", "recipient", "age",	"country", "product_sold",	"quantity"]
-    schema = StructType([
-        StructField("id", IntegerType(), nullable=True),
-        StructField("area", StringType(), nullable=True),
-        StructField("calls_made", IntegerType(), nullable=True),
-        StructField("calls_successful", IntegerType(), nullable=True),
-        StructField("name", StringType(), nullable=True),
-        StructField("address", StringType(), nullable=True),
-        StructField("sales_amount", IntegerType(), nullable=True)])
+    schema = ["id", "caller_id", "company", "recipient", "age",	"country", "product_sold",	"quantity"]
+    # schema = StructType([
+    #     StructField("id", IntegerType(), nullable=True),
+    #     StructField("area", StringType(), nullable=True),
+    #     StructField("calls_made", IntegerType(), nullable=True),
+    #     StructField("calls_successful", IntegerType(), nullable=True),
+    #     StructField("name", StringType(), nullable=True),
+    #     StructField("address", StringType(), nullable=True),
+    #     StructField("sales_amount", IntegerType(), nullable=True)])
 
     return spark.createDataFrame(data, schema)
 
@@ -138,7 +138,14 @@ def test_task1(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFra
         (2, "IT", 60, 20, "Jane Smith", "Lindehof 5, 4133 HB, Nederhemert", 2000),
         (1, "IT", 50, 10, "John Doe", "2588 VD, Kropswolde", 1000)
     ]
-    expected_schema = ["id", "area", "calls_made", "calls_successful", "name", "address", "sales_amount"]
+    expected_schema = StructType([
+        StructField("id", IntegerType(), nullable=True),
+        StructField("area", StringType(), nullable=True),
+        StructField("calls_made", IntegerType(), nullable=True),
+        StructField("calls_successful", IntegerType(), nullable=True),
+        StructField("name", StringType(), nullable=True),
+        StructField("address", StringType(), nullable=True),
+        StructField("sales_amount", IntegerType(), nullable=True)])
     expected_df = spark.createDataFrame(expected_data, expected_schema)
     
     # Ensure the directory is clean
