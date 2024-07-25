@@ -52,11 +52,5 @@ def test_write_csv(spark: SparkSession, tmp_path: Path) -> None:
 
     written_df =  spark.read.option("header", "true").csv(str(output_path), header=True, schema=schema, sep=',')
 
-    # spark.read.csv(str(output_path), header=True, schema=schema)
-
     # # Assert equality of original and written DataFrames
     assert_df_equality(df, written_df)
-
-    # # Additional checks
-    # # assert output_path.exists(), f"CSV file was not created at {output_path}"
-    # assert not (folder_path / folder_name / "temp").exists(), "Temporary folder was not deleted"
