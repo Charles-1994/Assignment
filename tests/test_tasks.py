@@ -130,7 +130,7 @@ def test_task1(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFra
         (2, "IT", 60, 20, "Jane Smith", "Lindehof 5, 4133 HB, Nederhemert", 2000),
         (1, "IT", 50, 10, "John Doe", "2588 VD, Kropswolde", 1000)
     ]
-    # expected_schema = ["id", "area", "calls_made", "calls_successful", "name", "address", "sales_amount"]
+
     expected_schema = StructType([
         StructField("id", IntegerType(), nullable=True),
         StructField("area", StringType(), nullable=True),
@@ -139,6 +139,7 @@ def test_task1(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFra
         StructField("name", StringType(), nullable=True),
         StructField("address", StringType(), nullable=True),
         StructField("sales_amount", IntegerType(), nullable=True)])
+    
     expected_df = spark.createDataFrame(expected_data, expected_schema)
     
     # Ensure the directory is clean
