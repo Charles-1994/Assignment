@@ -5,7 +5,7 @@ name: Python application CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main", "task1" ]
+    branches: [ "main"]
   pull_request:
     branches: [ "main" ]
 
