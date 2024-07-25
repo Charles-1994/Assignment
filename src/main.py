@@ -1,7 +1,7 @@
 import sys
 from .utils import get_spark_session, logger
 from .data_read_and_write import load_dataset, write_data, write_csv
-from .task1 import Task1
+from .tasks import Task1
 # from .analysis import filter_it_data, get_top_100_it_sales, get_marketing_address_info, department_breakdown
 
 def main(
@@ -24,13 +24,18 @@ def main(
     empInfo = load_dataset(spark, dataset_two_path)
     clientsCalled = load_dataset(spark, dataset_three_path)
 
-    output_folder = "../output_folder/"
+    # output_folder = "../output_folder/"
 
     # Task 1
-    it_df = Task1(empDept, empInfo)
+    Task1(empDept, empInfo)
 
-    folder_name = 'it_data'
-    file_name = 'it_data.csv'
-    write_csv(it_df, output_folder, folder_name, file_name)
+    # folder_name = 'it_data'
+    # file_name = 'it_data.csv'
+    # write_csv(it_df, output_folder, folder_name, file_name)
     
- 
+if __name__ == "__main__":
+    if len(sys.argv) == 4:
+        main(sys.argv[1], sys.argv[2], sys.argv[3])
+    else:
+        logger.warning("Using default dataset paths.")
+        main()
