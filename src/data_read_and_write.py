@@ -161,7 +161,7 @@ def write_csv(df: DataFrame, folder_path: Union[str, Path], folder_name: str, fi
         logger.info(f"CSV file written successfully: {final_file_path}")
 
         # Show the DataFrame
-        df.show()
+        # df.show()
 
     except Exception as e:
         logger.error(f"Error writing CSV file: {e}")
