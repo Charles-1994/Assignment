@@ -2,7 +2,7 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from chispa.dataframe_comparer import assert_df_equality
 from pyspark.sql.functions import col, desc
-from src.tasks import task1
+from src.tasks import task1, task2
 from src.data_read_and_write import load_dataset
 from pathlib import Path
 import shutil
@@ -93,34 +93,6 @@ def clientsCalled_df(spark: SparkSession) -> DataFrame:
 
     return spark.createDataFrame(data, schema)
 
-# def test_task1(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFrame, tmp_path: Path) -> None:
-#     """
-#     Test for task1 function to ensure it processes IT data correctly.
-    
-#     Args:
-#         spark (SparkSession): The Spark session object.
-#         emp_dept_df (DataFrame): Sample employee department DataFrame.
-#         emp_info_df (DataFrame): Sample employee information DataFrame.
-#         tmp_path: Temporary path for writing output.
-#     """
-#     output_folder = tmp_path
-#     target_folder = 'output_folder'
-#     folder_name = 'it_data'
-#     file_name = 'it_data.csv'
-#     expected_data = [
-#         (2, "IT", 60, 20, "Jane Smith", "Lindehof 5, 4133 HB, Nederhemert", 2000),
-#         (1, "IT", 50, 10, "John Doe", "2588 VD, Kropswolde", 1000)
-#     ]
-#     expected_schema = ["id", "area", "calls_made", "calls_successful", "name", "address", "sales_amount"]
-#     expected_df = spark.createDataFrame(expected_data, expected_schema)
-    
-#     task1(spark, emp_dept_df, emp_info_df)
-    
-#     output_path = output_folder/target_folder/folder_name/file_name
-#     result_df = load_dataset(spark, str(output_path))
-    
-#     assert_df_equality(result_df, expected_df)
-
 def test_task1(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFrame, tmp_path: Path) -> None:
     """
     Test for task1 function to ensure it processes IT data correctly.
@@ -160,3 +132,39 @@ def test_task1(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFra
     
     assert_df_equality(result_df, expected_df)
 
+
+def test_task2(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFrame, tmp_path: Path) -> None:
+    """
+    Test for task2 function to ensure it processes Addresses of Marketing Department correctly.
+    
+    Args:
+        spark (SparkSession): The Spark session object.
+        emp_dept_df (DataFrame): Sample employee department DataFrame.
+        emp_info_df (DataFrame): Sample employee information DataFrame.
+        tmp_path: Temporary path for writing output.
+    """
+
+    output_folder = tmp_path
+    folder_name = 'marketing_address_info'
+    file_name = 'marketing_address_info.csv'
+    expected_data = [
+        ("Lindehof 5, 4133 HB, Nederhemert", "4133 HB"),
+        ("2588 VD, Kropswolde", "2588 VD")
+    ]
+    expected_schema = StructType([
+        StructField("address", StringType(), nullable=True),
+        StructField("zip_code", StringType(), nullable=True)
+  ])
+    expected_df = spark.createDataFrame(expected_data, expected_schema)
+    
+    # Ensure the directory is clean
+    test_output_path = tmp_path / folder_name
+    if test_output_path.exists():
+        shutil.rmtree(test_output_path)
+    
+    task2(spark, emp_dept_df, emp_info_df, output_folder, folder_name, file_name)
+    
+    output_path = output_folder/folder_name/file_name
+    result_df = load_dataset(spark, str(output_path))
+    
+    assert_df_equality(result_df, expected_df)
