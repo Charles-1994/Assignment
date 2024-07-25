@@ -31,10 +31,12 @@ Run the tests using pytest:
 1. **Install the package**:
    ```bash
    pip install .
+   ```
 
 2. **Run the application**
     ```bash
     sales-data
+    ```
 
 3.**Run the tests**
     ```bash
