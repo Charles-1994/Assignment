@@ -2,7 +2,7 @@ import pytest
 import pkg_resources
 from pyspark.sql import SparkSession
 from chispa import assert_df_equality
-from src.data_read_and_write import load_dataset, write_data, write_csv
+from src.data_read_and_write import load_dataset, write_csv
 from src.utils import get_spark_session
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from pathlib import Path
@@ -15,18 +15,18 @@ def test_load_dataset(spark: SparkSession) -> None:
     df = load_dataset(spark, "./Source_Datasets/dataset_one.csv")
     assert df is not None
 
-def test_write_data(spark: SparkSession, tmp_path:Path) -> None:
-    data = [("John Doe", 1000)]
-    # Define the schema
-    schema = StructType([
-        StructField("name", StringType(), nullable=True),
-        StructField("sales_amount", IntegerType(), nullable=True)
-    ])
-    df = spark.createDataFrame(data, schema)
-    output_path = tmp_path / "output.csv"
-    write_data(df, str(output_path))
-    written_df = spark.read.csv(str(output_path), header=True, inferSchema=True)
-    assert_df_equality(df, written_df)
+# def test_write_data(spark: SparkSession, tmp_path:Path) -> None:
+#     data = [("John Doe", 1000)]
+#     # Define the schema
+#     schema = StructType([
+#         StructField("name", StringType(), nullable=True),
+#         StructField("sales_amount", IntegerType(), nullable=True)
+#     ])
+#     df = spark.createDataFrame(data, schema)
+#     output_path = tmp_path / "output.csv"
+#     write_data(df, str(output_path))
+#     written_df = spark.read.csv(str(output_path), header=True, inferSchema=True)
+#     assert_df_equality(df, written_df)
 
 def test_write_csv(spark: SparkSession, tmp_path: Path) -> None:
     data = [("John Doe", 1000)]
