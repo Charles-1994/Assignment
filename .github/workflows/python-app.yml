@@ -13,6 +13,34 @@ on:
 #   contents: read
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pre-commit
+          pre-commit install
+          pip install -r requirements.txt
+
+      - name: Run pre-commit
+        run: pre-commit run --all-files
+
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
   build:
 
     runs-on: ubuntu-latest
@@ -31,15 +59,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install wheel
         pip install -r requirements.txt
-
-#        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    # - name: Lint with flake8
-    #   run: |
-    #     # stop the build if there are Python syntax errors or undefined names
-    #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-    #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     
+    # - name: Install pre-commit
+    #   run: pip install pre-commit
+
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=src" >> $GITHUB_ENV
 
