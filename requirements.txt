@@ -5,4 +5,3 @@ wheel
 pre-commit
 flake8
 mypy
-gi
