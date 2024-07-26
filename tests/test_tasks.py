@@ -3,7 +3,7 @@ from pyspark.sql import SparkSession, DataFrame
 from chispa.dataframe_comparer import assert_df_equality
 from chispa.schema_comparer import assert_schema_equality
 from pyspark.sql.functions import col, desc
-from src.tasks import task1, task2, task3, task4
+from src.tasks import task1, task2, task3, task4, task5
 from src.data_read_and_write import load_dataset
 from pathlib import Path
 import shutil
@@ -82,15 +82,17 @@ def clientsCalled_df(spark: SparkSession) -> DataFrame:
         (1,	40,	"Verbruggen-Vermeulen CommV", "Anny Claessens", 45, "Belgium", "Banner", 50),
         (2,	17,	"Hendrickx CV",	"Lutgarde Van Loock", 41, "Belgium", "Sign", 23)
     ]
-    schema = ["id", "caller_id", "company", "recipient", "age",	"country", "product_sold",	"quantity"]
-    # schema = StructType([
-    #     StructField("id", IntegerType(), nullable=True),
-    #     StructField("area", StringType(), nullable=True),
-    #     StructField("calls_made", IntegerType(), nullable=True),
-    #     StructField("calls_successful", IntegerType(), nullable=True),
-    #     StructField("name", StringType(), nullable=True),
-    #     StructField("address", StringType(), nullable=True),
-    #     StructField("sales_amount", IntegerType(), nullable=True)])
+    # schema = ["id", "caller_id", "company", "recipient", "age",	"country", "product_sold",	"quantity"]
+    schema = StructType([
+        StructField("id", IntegerType(), nullable=True),
+        StructField("caller_id", IntegerType(), nullable=True),
+        StructField("company", StringType(), nullable=True),
+        StructField("recipient", StringType(), nullable=True),
+        StructField("age", IntegerType(), nullable=True),
+        StructField("country", StringType(), nullable=True),
+        StructField("product_sold", StringType(), nullable=True),
+        StructField("quantity", IntegerType(), nullable=True)
+    ])
 
     return spark.createDataFrame(data, schema)
 
@@ -207,7 +209,6 @@ def test_task3(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFra
 def test_task4(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFrame, tmp_path: Path) -> None:
     """
     Test for task4 function to ensure it processes top 3 performers in each area (sorted by calls_successful_perc, sales_amount in descending order).
-
     Args:
         spark (SparkSession): The Spark session object.
         emp_dept_df (DataFrame): Sample employee department DataFrame.
@@ -220,7 +221,7 @@ def test_task4(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFra
     file_name = 'top_3.csv'
     expected_schema = StructType([
         StructField("area", StringType(), nullable=True),
-        StructField("name", StringType(), nullable=True),
+        StructField("name", StringType(), nullable=True),        
         StructField("sales_amount", StringType(), nullable=True),
         StructField("rank_", IntegerType(), nullable=True),
         StructField("calls_successful_perc", StringType(), nullable=True)
@@ -233,6 +234,40 @@ def test_task4(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFra
         shutil.rmtree(test_output_path)
     
     task4(spark, emp_dept_df, emp_info_df, output_folder, folder_name, file_name)
+    
+    output_path = output_folder/folder_name/file_name
+    result_df = load_dataset(spark, str(output_path))
+    
+    assert_schema_equality(result_df.schema, expected_schema)
+
+def test_task5(spark: SparkSession, emp_dept_df: DataFrame, clientsCalled_df: DataFrame, tmp_path: Path) -> None:
+    """
+    Test for task5 function to ensure it processes top 3 most sold products per department in Netherlands.
+
+    Args:
+        spark (SparkSession): The Spark session object.
+        emp_dept_df (DataFrame): Sample employee department DataFrame.
+        emp_info_df (DataFrame): Sample employee information DataFrame.
+        tmp_path: Temporary path for writing output.
+    """
+
+    output_folder = tmp_path
+    folder_name = 'top_3_most_sold_per_department_netherlands'
+    file_name = 'top_3_most_sold_per_department_netherlands.csv'
+    expected_schema = StructType([
+        StructField("area", StringType(), nullable=True),
+        StructField("product_sold", StringType(), nullable=True),
+        StructField("prd_quantity", StringType(), nullable=True),
+        StructField("prd_rank", StringType(), nullable=True)
+  ])
+    # expected_df = spark.createDataFrame(expected_data, expected_schema)
+    
+    # Ensure the directory is clean
+    test_output_path = tmp_path / folder_name
+    if test_output_path.exists():
+        shutil.rmtree(test_output_path)
+    
+    task5(spark, emp_dept_df, clientsCalled_df, output_folder, folder_name, file_name)
     
     output_path = output_folder/folder_name/file_name
     result_df = load_dataset(spark, str(output_path))
