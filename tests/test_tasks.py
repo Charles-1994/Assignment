@@ -3,7 +3,7 @@ from pyspark.sql import SparkSession, DataFrame
 from chispa.dataframe_comparer import assert_df_equality
 from chispa.schema_comparer import assert_schema_equality
 from pyspark.sql.functions import col, desc
-from src.tasks import task1, task2, task3, task4, task5
+from src.tasks import task1, task2, task3, task4, task5, task6
 from src.data_read_and_write import load_dataset
 from pathlib import Path
 import shutil
@@ -268,6 +268,41 @@ def test_task5(spark: SparkSession, emp_dept_df: DataFrame, clientsCalled_df: Da
         shutil.rmtree(test_output_path)
     
     task5(spark, emp_dept_df, clientsCalled_df, output_folder, folder_name, file_name)
+    
+    output_path = output_folder/folder_name/file_name
+    result_df = load_dataset(spark, str(output_path))
+    
+    assert_schema_equality(result_df.schema, expected_schema)
+
+def test_task6(spark: SparkSession, emp_dept_df: DataFrame, emp_info_df: DataFrame, clientsCalled_df: DataFrame, tmp_path: Path) -> None:
+    """
+    Test for task5 function to ensure it processes  Best Salesmen by country.
+
+    Args:
+        spark (SparkSession): The Spark session object.
+        emp_dept_df (DataFrame): Sample employee department DataFrame.
+        emp_info_df (DataFrame): Sample employee information DataFrame.
+        tmp_path: Temporary path for writing output.
+    """
+
+    output_folder = tmp_path
+    folder_name = 'best_salesperson'
+    file_name = 'best_salesperson.csv'
+    expected_schema = StructType([
+        StructField("country", StringType(), nullable=True),
+        StructField("id", StringType(), nullable=True),
+        StructField("name", StringType(), nullable=True),
+        StructField("area", StringType(), nullable=True),
+        StructField("quantity", IntegerType(), nullable=True)
+  ])
+    # expected_df = spark.createDataFrame(expected_data, expected_schema)
+    
+    # Ensure the directory is clean
+    test_output_path = tmp_path / folder_name
+    if test_output_path.exists():
+        shutil.rmtree(test_output_path)
+    
+    task6(spark, emp_dept_df, emp_info_df, clientsCalled_df, output_folder, folder_name, file_name)
     
     output_path = output_folder/folder_name/file_name
     result_df = load_dataset(spark, str(output_path))
