@@ -118,3 +118,42 @@ def task4(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
 
     write_csv(top3_df, output_folder, folder_name, file_name)
     logger.info("Task 4: top 3 performers in each area (sorted by calls_successful_perc, sales_amount in descending order) are processed and saved successfully")
+
+def task5(spark: SparkSession, empDept: DataFrame, clientsCalled: DataFrame, output_folder: str, folder_name: str = 'top_3_most_sold_per_department_netherlands', file_name: str = 'top_3_most_sold_per_department_netherlands.csv') -> None:
+    """
+    Task 5: Process top 3 most sold products per department in Netherlands.
+    
+    Args:
+        spark (SparkSession): The SparkSession object.
+        empDept (DataFrame): The first dataset.
+        empInfo (DataFrame): The second dataset.
+        output_folder(str): The output folder.
+        folder_name(str): The folder that needs to be created in the output folder
+        fiile_name(str): The file that needs to be created in the requested folder
+    """
+
+    clientsCalled.createOrReplaceTempView("clientsCalled")
+    empDept.createOrReplaceTempView("empDept")
+
+    sql_query = """
+    with prd_table as (
+        select ed.area, cc.product_sold, sum(cc.quantity) as prd_quantity from (
+            select * from clientsCalled
+            where country = 'Netherlands') cc
+        left join empDept ed on cc.caller_id = ed.id
+        group by 1,2
+        order by area ASC, prd_quantity desc
+    )
+
+    select * from (
+        select *, row_number() over (partition by area order by prd_quantity desc) as prd_rank
+        from prd_table
+    )
+    where prd_rank <=3
+    """
+
+    top3_prd_NL = spark.sql(sql_query)
+    # top3_prd_NL.show()
+
+    write_csv(top3_prd_NL, output_folder, folder_name, file_name)
+    logger.info("Task 5: top 3 most sold products per department in Netherlands are processed and saved successfully")
