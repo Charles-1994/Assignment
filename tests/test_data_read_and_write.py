@@ -2,7 +2,7 @@ import pytest
 import pkg_resources
 from pyspark.sql import SparkSession
 from chispa import assert_df_equality
-from src.data_read_and_write import load_dataset, write_data, write_csv
+from src.data_read_and_write import load_dataset, write_csv
 from src.utils import get_spark_session
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from pathlib import Path
