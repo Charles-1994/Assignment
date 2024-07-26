@@ -1,8 +1,8 @@
 import sys
 from .utils import get_spark_session, logger
-from .data_read_and_write import load_dataset, write_data, write_csv
-from .tasks import task1, task2, task3, task4, task5, task6
-# from .analysis import filter_it_data, get_top_100_it_sales, get_marketing_address_info, department_breakdown
+from pyspark.sql import SparkSession
+from .data_read_and_write import load_dataset
+from .tasks import task1, task2, task3, task4, task5, task6, extraTask1, extraTask2
 
 def main(
     dataset_one_path: str = "./Source_Datasets/dataset_one.csv",
@@ -18,7 +18,7 @@ def main(
         dataset_three_path (str): Path to the third dataset (dataset_three.csv)
     """
     
-    spark = get_spark_session()
+    spark:SparkSession = get_spark_session()
 
     empDept = load_dataset(spark, dataset_one_path)
     empInfo = load_dataset(spark, dataset_two_path)
@@ -26,7 +26,7 @@ def main(
 
     output_folder = "./output_folder/"
 
-    # Task 1
+    # calling all task functions
     logger.info("Executing Task 1: Processing IT Data")
     task1(spark, empDept, empInfo, output_folder)
 
@@ -44,6 +44,12 @@ def main(
 
     logger.info("Executing Task 6: Processing Best Salesmen by country")
     task6(spark, empDept, empInfo, clientsCalled, output_folder)
+
+    logger.info("Executing extra Task1: Processing KPI's that can  help compare Departments")
+    extraTask1(spark, empDept, empInfo, output_folder)
+
+    logger.info("Executing extra Task2: Processing least 5 performers by department (based on calls_success_rate vs sales_amount)")
+    extraTask2(spark, empDept, empInfo, output_folder)
 
     
 if __name__ == "__main__":

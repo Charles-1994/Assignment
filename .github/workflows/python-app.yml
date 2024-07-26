@@ -5,12 +5,11 @@ name: Python application CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main"]
+    branches: 
+      - main
   pull_request:
-    branches: [ "main" ]
-
-# permissions:
-#   contents: read
+    branches:
+      - main
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true
@@ -45,46 +44,40 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.10"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install wheel
-        pip install -r requirements.txt
-    
-    # - name: Install pre-commit
-    #   run: pip install pre-commit
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel
+          pip install -r requirements.txt
+      
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+      - name: Run Tests
+        env:
+          PYTHONPATH: src
+        run: |
+          pytest tests/ --junitxml=reports/test-results.xml
 
-    - name: Run Tests
-      env:
-        PYTHONPATH: src
-      run: |
-        pytest tests/ --junitxml=reports/test-results.xml
+      - name: Build and package
+        env:
+          PYTHONPATH: src
+        run: |
+          python setup.py sdist bdist_wheel
 
-    - name: Build and package
-      env:
-        PYTHONPATH: src
-      run: |
-        python setup.py sdist bdist_wheel
-
-    - name: Upload package
-      uses: actions/upload-artifact@v4
-      with:
-          name: pyspark_sales_data_project
-          path: dist/
-
-    
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+            name: pyspark_sales_data_project
+            path: dist/

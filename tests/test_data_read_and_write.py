@@ -1,4 +1,5 @@
-import pytest 
+import pytest
+import pkg_resources
 from pyspark.sql import SparkSession
 from chispa import assert_df_equality
 from src.data_read_and_write import load_dataset, write_data, write_csv

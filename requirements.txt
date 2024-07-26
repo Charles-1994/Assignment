@@ -5,3 +5,4 @@ wheel
 pre-commit
 flake8
 mypy
+types-setuptools

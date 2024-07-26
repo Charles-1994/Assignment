@@ -37,7 +37,6 @@ def task2(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
         fiile_name(str): The file that needs to be created in the requested folder
     """
     result_df = empDept.filter(col('area')=='Marketing').join(empInfo, on='id',how='left')
-    # result_df.select('name','address').display()
 
     # Create new columns based on the number of parts
     result_df = result_df.select('name','address')\
@@ -52,7 +51,6 @@ def task2(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
             .withColumnRenamed('address_part3', 'city')
     
     marketing_address_info = result_df.select('address','zipcode')
-    # marketing_address_info.display()
 
     write_csv(marketing_address_info, output_folder, folder_name, file_name)
     logger.info("Task 2: Addresses of Marketing Department are processed and saved successfully")
@@ -81,7 +79,6 @@ def task3(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
     group by 1
     """
     department_data = spark.sql(sql_query)
-    # department_data.show()
 
     write_csv(department_data.select('area','sales_amount','calls_successful_perc'), output_folder, folder_name, file_name)
     logger.info("Task 3: sales_amount and calls_successful_perc by Department are processed and saved successfully")
@@ -115,8 +112,7 @@ def task4(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
     ) t
     where rank_ <= 3
     """
-    top3_df = spark.sql(sql_query)
-    # top3_df.display()    
+    top3_df = spark.sql(sql_query)   
 
     write_csv(top3_df, output_folder, folder_name, file_name)
     logger.info("Task 4: top 3 performers in each area (sorted by calls_successful_perc, sales_amount in descending order) are processed and saved successfully")
@@ -155,8 +151,6 @@ def task5(spark: SparkSession, empDept: DataFrame, clientsCalled: DataFrame, out
     """
 
     top3_prd_NL = spark.sql(sql_query)
-    # top3_prd_NL.show()
-
     write_csv(top3_prd_NL, output_folder, folder_name, file_name)
     logger.info("Task 5: top 3 most sold products per department in Netherlands are processed and saved successfully")
 
@@ -168,6 +162,7 @@ def task6(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, clientsCa
         spark (SparkSession): The SparkSession object.
         empDept (DataFrame): The first dataset.
         empInfo (DataFrame): The second dataset.
+        clientsCalled (DataFrame): The third dataset.
         output_folder(str): The output folder.
         folder_name(str): The folder that needs to be created in the output folder
         fiile_name(str): The file that needs to be created in the requested folder
@@ -191,7 +186,84 @@ def task6(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, clientsCa
     """
 
     best_salesperson = spark.sql(sql_query)
-    # best_salesperson.show()
-
     write_csv(best_salesperson, output_folder, folder_name, file_name)
     logger.info("Task 6: Best Salesmen by country are processed and saved successfully")
+
+def extraTask1(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: Union[str, Path], folder_name: str = 'extra_insight_one', file_name: str = 'extra_insight_one.csv') -> None:
+    """
+    extraTask 1: Process to compare different Area's KPIs 
+    
+    Args:
+        spark (SparkSession): The SparkSession object.
+        empDept (DataFrame): The first dataset.
+        empInfo (DataFrame): The second dataset.
+        output_folder(str): The output folder.
+        folder_name(str): The folder that needs to be created in the output folder
+        fiile_name(str): The file that needs to be created in the requested folder
+    """
+    empSales = empDept.join(empInfo, on = 'id', how='left')
+    empSales.createOrReplaceTempView('empSales')
+
+    sql_query = """
+    with temp as (
+    select *, round(calls_successful/calls_made *100,2) as calls_success_rate
+    from empSales
+    )
+
+    select area, 
+            round(sum(sales_amount),2) as Total_sales,
+            max(sales_amount) as max_sales,
+            min(sales_amount) as min_sales,
+            round(avg(sales_amount),2) as avg_sales,
+            max(calls_success_rate) as highest_calls_success_rate,
+            min(calls_success_rate) as least_calls_success_rate,
+            round(avg(calls_success_rate),2) as avg_rate,
+            round(corr(sales_amount,calls_success_rate),2) as correlation
+    from temp
+    group by 1
+    """
+
+    res_df: DataFrame = spark.sql(sql_query)
+    write_csv(res_df, output_folder, folder_name, file_name)
+    logger.info("extraTask1: KPI's that can  help compare Departments are processed and saved successfully")
+
+def extraTask2(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: Union[str, Path], folder_name: str = 'extra_insight_two', file_name: str = 'extra_insight_two.csv') -> None:
+    """
+    extraTask 2: Process to find the least 5 performers by department (based on calls_success_rate vs sales_amount)
+    
+    Args:
+        spark (SparkSession): The SparkSession object.
+        empDept (DataFrame): The first dataset.
+        empInfo (DataFrame): The second dataset.
+        output_folder(str): The output folder.
+        folder_name(str): The folder that needs to be created in the output folder
+        fiile_name(str): The file that needs to be created in the requested folder
+    """
+    empSales = empDept.join(empInfo, on = 'id', how='left')
+    empSales.createOrReplaceTempView('empSales')
+
+    sql_query = """
+    with temp as (
+    select area, id, name, calls_successful, calls_made, sales_amount,
+        round(calls_successful/calls_made *100,2) as calls_success_rate
+    from empSales
+    ), 
+
+    req_df as (
+    select *, row_number() over (partition by area order by calls_success_rate, sales_amount) as call_success_rank,
+        row_number() over (partition by area order by sales_amount,calls_success_rate) as sales_amount_rank
+    from temp
+    )
+
+    select cp.area, cp.call_success_rank, cp.name as name_by_csr, cp.sales_amount as sales_amount_by_csr, cp.calls_success_rate as calls_success_rate_by_csr,
+        sp.sales_amount_rank, sp.name as name_by_sa, sp.sales_amount as sales_amount_by_sa, sp.calls_success_rate as calls_success_rate_by_sa 
+    from (select * from req_df
+    where call_success_rank<=5) as cp
+    left join (select * from req_df where sales_amount_rank<=5) sp 
+        on cp.area = sp.area and cp.call_success_rank =sp.sales_amount_rank
+    order by area, call_success_rank
+    """
+
+    res_df: DataFrame = spark.sql(sql_query)
+    write_csv(res_df, output_folder, folder_name, file_name)
+    logger.info("extraTask2: least 5 performers by department (based on calls_success_rate vs sales_amount) are processed and saved successfully")
