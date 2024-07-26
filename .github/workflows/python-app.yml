@@ -82,4 +82,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
           name: pyspark_sales_data_project
-          path: dist/*
+          path: dist/
+
+    
