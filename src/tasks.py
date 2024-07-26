@@ -157,3 +157,39 @@ def task5(spark: SparkSession, empDept: DataFrame, clientsCalled: DataFrame, out
 
     write_csv(top3_prd_NL, output_folder, folder_name, file_name)
     logger.info("Task 5: top 3 most sold products per department in Netherlands are processed and saved successfully")
+
+def task6(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, clientsCalled:DataFrame ,output_folder: str, folder_name: str = 'best_salesperson', file_name: str = 'best_salesperson.csv') -> None:
+    """
+    Task 6: Process Best Salesmen by country.
+    
+    Args:
+        spark (SparkSession): The SparkSession object.
+        empDept (DataFrame): The first dataset.
+        empInfo (DataFrame): The second dataset.
+        output_folder(str): The output folder.
+        folder_name(str): The folder that needs to be created in the output folder
+        fiile_name(str): The file that needs to be created in the requested folder
+    """
+
+    empSales = empDept.join(empInfo, on = 'id', how='left')
+    empSales.createOrReplaceTempView('empSales')
+
+    clientsCalled.createOrReplaceTempView('clientsCalled')
+    sql_query = """
+    with countryWide as (
+    select country, caller_id, sum(quantity) as quantity from clientsCalled
+    group by 1,2
+    )
+
+    select cw.country, es.id, es.name, es.area, cw.quantity from (
+        select *, row_number() over (partition by country order by quantity desc) as rank_1 from countryWide) cw
+    left join empSales es on cw.caller_id = es.id
+    where cw.rank_1 = 1
+    order by cw.country
+    """
+
+    best_salesperson = spark.sql(sql_query)
+    # best_salesperson.show()
+
+    write_csv(best_salesperson, output_folder, folder_name, file_name)
+    logger.info("Task 6: Best Salesmen by country are processed and saved successfully")
