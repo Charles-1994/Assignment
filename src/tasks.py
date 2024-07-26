@@ -2,8 +2,10 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, split, when, size, trim, desc
 from .utils import logger
 from .data_read_and_write import write_csv
+from pathlib import Path
+from typing import Union
 
-def task1(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: str, folder_name: str = 'it_data', file_name: str = 'it_data.csv') -> None:
+def task1(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: Union[str, Path], folder_name: str = 'it_data', file_name: str = 'it_data.csv') -> None:
     """
     Task 1: Process IT Data.
     
@@ -22,7 +24,7 @@ def task1(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
     write_csv(it_df, output_folder, folder_name, file_name)
     logger.info("Task 1: IT Data processed and saved successfully")
 
-def task2(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: str, folder_name: str = 'marketing_address_info', file_name: str = 'marketing_address_info.csv') -> None:
+def task2(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: Union[str, Path], folder_name: str = 'marketing_address_info', file_name: str = 'marketing_address_info.csv') -> None:
     """
     Task 2: Process Addresses of Marketing Area employees.
     
@@ -55,7 +57,7 @@ def task2(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
     write_csv(marketing_address_info, output_folder, folder_name, file_name)
     logger.info("Task 2: Addresses of Marketing Department are processed and saved successfully")
 
-def task3(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: str, folder_name: str = 'department_breakdown', file_name: str = 'department_breakdown.csv') -> None:
+def task3(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: Union[str, Path], folder_name: str = 'department_breakdown', file_name: str = 'department_breakdown.csv') -> None:
     """
     Task 3: Process sales_amount and calls_successful_perc by Department.
     
@@ -84,7 +86,7 @@ def task3(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
     write_csv(department_data.select('area','sales_amount','calls_successful_perc'), output_folder, folder_name, file_name)
     logger.info("Task 3: sales_amount and calls_successful_perc by Department are processed and saved successfully")
 
-def task4(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: str, folder_name: str = 'top_3', file_name: str = 'top_3.csv') -> None:
+def task4(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_folder: Union[str, Path], folder_name: str = 'top_3', file_name: str = 'top_3.csv') -> None:
     """
     Task 4: Process top 3 performers in each area (sorted by calls_successful_perc, sales_amount in descending order).
     
@@ -119,7 +121,7 @@ def task4(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, output_fo
     write_csv(top3_df, output_folder, folder_name, file_name)
     logger.info("Task 4: top 3 performers in each area (sorted by calls_successful_perc, sales_amount in descending order) are processed and saved successfully")
 
-def task5(spark: SparkSession, empDept: DataFrame, clientsCalled: DataFrame, output_folder: str, folder_name: str = 'top_3_most_sold_per_department_netherlands', file_name: str = 'top_3_most_sold_per_department_netherlands.csv') -> None:
+def task5(spark: SparkSession, empDept: DataFrame, clientsCalled: DataFrame, output_folder: Union[str, Path], folder_name: str = 'top_3_most_sold_per_department_netherlands', file_name: str = 'top_3_most_sold_per_department_netherlands.csv') -> None:
     """
     Task 5: Process top 3 most sold products per department in Netherlands.
     
@@ -158,7 +160,7 @@ def task5(spark: SparkSession, empDept: DataFrame, clientsCalled: DataFrame, out
     write_csv(top3_prd_NL, output_folder, folder_name, file_name)
     logger.info("Task 5: top 3 most sold products per department in Netherlands are processed and saved successfully")
 
-def task6(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, clientsCalled:DataFrame ,output_folder: str, folder_name: str = 'best_salesperson', file_name: str = 'best_salesperson.csv') -> None:
+def task6(spark: SparkSession, empDept: DataFrame, empInfo: DataFrame, clientsCalled:DataFrame ,output_folder: Union[str, Path], folder_name: str = 'best_salesperson', file_name: str = 'best_salesperson.csv') -> None:
     """
     Task 6: Process Best Salesmen by country.
     
