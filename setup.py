@@ -1,11 +1,19 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages  # type: ignore
+from typing import List
 
-def parse_requirements(filename):
+def parse_requirements(filename: str) -> List[str]:
     """
     Load requirements from a pip requirements file.
+
+    Args:
+        filename (str): The path to the requirements file.
+
+    Returns:
+        List[str]: A list of requirement strings.
     """
-    lineiter = (line.strip() for line in open(filename))
-    return [line for line in lineiter if line and not line.startswith("#")]
+    with open(filename) as file:
+        lineiter = (line.strip() for line in file)
+        return [line for line in lineiter if line and not line.startswith("#")]
 
 setup(
     name='pyspark_sales_data_project',
