@@ -45,9 +45,6 @@ def main(
     logger.info("Executing Task 6: Processing Best Salesmen by country")
     task6(spark, empDept, empInfo, clientsCalled, output_folder)
 
-    # folder_name = 'it_data'
-    # file_name = 'it_data.csv'
-    # write_csv(it_df, output_folder, folder_name, file_name)
     
 if __name__ == "__main__":
     if len(sys.argv) == 4:
