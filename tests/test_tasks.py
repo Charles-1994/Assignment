@@ -1,8 +1,8 @@
 import pytest
+import pkg_resources
 from pyspark.sql import SparkSession, DataFrame
 from chispa.dataframe_comparer import assert_df_equality
 from chispa.schema_comparer import assert_schema_equality
-from pyspark.sql.functions import col, desc
 from src.tasks import task1, task2, task3, task4, task5, task6
 from src.data_read_and_write import load_dataset
 from pathlib import Path
