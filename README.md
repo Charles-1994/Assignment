@@ -78,7 +78,7 @@ Since there are only 198 employees and all the address columns have proper Zip c
 ### Output #3 - **Department Breakdown**
 The stakeholders want to have a breakdown of the sales amount of each department and they also want to see the total percentage of calls_succesfful/calls_made per department. The amount of money and percentage should be easily readable.
 - The output directory should be called **department_breakdown** and you must use PySpark to save only to one **CSV** file.
-- 
+   
 ### Output #4 - **Top 3 best performers per department**
 The management team wants to reward it's best employees with a bonus and therefore it wants to know the name of the top 3 best performers per department. That is the ones that have a percentage of calls_succesfful/calls_made higher than 75%. It also wants to know the sales amount of these employees to see who best deserves the bonus. In your opinion, who should get it and why?
 - The output directory should be called **top_3** and you must use PySpark to save only to one **CSV** file.
@@ -106,8 +106,8 @@ In both empDept and empInfo data sets, we dont have any info about country speci
 
 1.	**extra_insight_one**: The above are some of the KPI's which can help us compare the departments as a whole.
 _Observations_: Tried to observe the relation between the successful calls made with the sales_amount. 
-   1. But there is no strong correlation between the calls_success_rate and sales_amount.
-   2. The best performing department in terms of sales is Games
+   - But there is no strong correlation between the calls_success_rate and sales_amount.
+   - The best performing department in terms of sales is Games
 
 2.	**extra_insight_two**: This data gives us the least performers of the department based on Sales amount ranking and calls_success_rate ranking
 
