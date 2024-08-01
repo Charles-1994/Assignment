@@ -64,12 +64,12 @@ The management teams wants some specific information about the people that are w
 - Order the data by the sales amount, biggest should come first.
 - Save only the first **100** records.
 - The output directory should be called **it_data** and you must use PySpark to save only to one **CSV** file.
-**_Note_**: Filter IT department first and joined the table. Efficient way to join tables with lesser records.
+##### **_Note_**: Filter IT department first and joined the table. Efficient way to join tables with lesser records.
 
 ### Output #2 - **Marketing Address Information**
 The management team wants to send some presents to team members that are work only selling **Marketing** products and wants a list of only addresses and zip code, but the zip code needs to be in it's own column.
 - The output directory should be called **marketing_address_info** and you must use PySpark to save only to one **CSV** file.
-**_Note_**:
+##### **_Note_**:
 Assuming we are sending presents to all the people who belong to Marketing Dept
 Since there are only 198 employees and all the address columns have proper Zip code format. We can
 - either split the address column and based on the size of the list, divide columns in to 3 new columns, where we extract zip code
@@ -82,30 +82,31 @@ The stakeholders want to have a breakdown of the sales amount of each department
 ### Output #4 - **Top 3 best performers per department**
 The management team wants to reward it's best employees with a bonus and therefore it wants to know the name of the top 3 best performers per department. That is the ones that have a percentage of calls_succesfful/calls_made higher than 75%. It also wants to know the sales amount of these employees to see who best deserves the bonus. In your opinion, who should get it and why?
 - The output directory should be called **top_3** and you must use PySpark to save only to one **CSV** file.
-**_Note_**:
+##### **_Note_**:
 In the above table, we have the top 3 performers in each area (sorted by calls_successful_perc, sales_amount in descending order)
 Even though for some personnel, calls_successful_perc is greater, their sales_amount is less. a difference of 2% in calls_successful_perc does not make up 5000 euros difference in sales_amount. According to me, the winners should be
-Finance - Sanne Verbeeck
-Games - Sven Lutterveld
-HR - Jayda Wilcken
-IT - Puck Tins
-Marketing - Lara van Vlaanderen-van de Darnau
+- Finance - Sanne Verbeeck
+- Games - Sven Lutterveld
+- HR - Jayda Wilcken
+- IT - Puck Tins
+- Marketing - Lara van Vlaanderen-van de Darnau
 
 ### Output #5 - **Top 3 most sold products per department in the Netherlands**
 - The output directory should be called **top_3_most_sold_per_department_netherlands** and you must use PySpark to save only to one **CSV** file.
-**_Note_**: top 3 products by department
+##### **_Note_**: top 3 products by department
 
 ### Output #6 - **Who is the best overall salesperson per country**
 - The output directory should be called **best_salesperson** and you must use PySpark to save only to one **CSV** file.
-**_Note_**: 
+##### **_Note_**: 
 In both empDept and empInfo data sets, we dont have any info about country specifi sales or calls_made. to determine the best salesmen by country we can only take the quantity of products sold as the metrics to determine the best salesmen.
 
 ## What is wanted? Extra Bonus
 - Please derive other two insights from the three datasets that you find interesting. Either create new datasets in **CSV** or if you prefer create some graphs.
 - Please save them as **extra_insight_one** and **extra_insight_two** directories and if you create a dataset you must use PySpark to save only to one **CSV** file.
 
+#### _Observations_:
 1.	**extra_insight_one**: The above are some of the KPI's which can help us compare the departments as a whole.
-_Observations_: Tried to observe the relation between the successful calls made with the sales_amount. 
+Tried to observe the relation between the successful calls made with the sales_amount. 
    - But there is no strong correlation between the calls_success_rate and sales_amount.
    - The best performing department in terms of sales is Games
 
