@@ -1,4 +1,4 @@
-# ABN Amro Assignment: Sales-Data Project
+# Assignment: Sales-Data Project
 
 ## Overview
 This project processes and analyzes sales data using PySpark.
