@@ -1,7 +1,7 @@
 # Assignment: Sales-Data Project
 
 ## Overview
-This project processes and analyzes sales data using PySpark.
+This project processes and analyzes sales data using PySpark. This project is an end to end software application that performs certain tasks to perform some data analysis on sales data. The application has automated tests, build and packaged using GitHub workflows.
 
 ## Structure
 - **src/**: Source code for all the tasks asked in the exercise.md
